@@ -2,7 +2,10 @@ from subprocess import call
 import datetime
 
 import os
-os.remove('document.odt')
+try:
+	os.remove('document.odt')
+except OSError:
+	pass
 
 # Convert the .tex into a document.
 call(['mk4ht', 'oolatex', 'document.tex'])
