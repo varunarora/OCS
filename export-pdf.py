@@ -63,8 +63,8 @@ s3_filename = dom.h2.get_text() + '_' + datetime.datetime.now().strftime('%s') +
 HTML(string=dom.prettify()).write_pdf(s3_filename, stylesheets=[CSS(
     string=css+new_styles_string)])
 
-import ExportUtilities as eu
-eu.export_to_aws(s3_filename, 'ocexportpdf')
+from ExportUtilities import ExportUtilities
+ExportUtilities.export_to_aws(s3_filename, 'ocexportpdf')
 
 import os
 os.remove(s3_filename)
