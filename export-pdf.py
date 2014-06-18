@@ -64,7 +64,7 @@ HTML(string=dom.prettify()).write_pdf(s3_filename, stylesheets=[CSS(
     string=css+new_styles_string)])
 
 from ExportUtilities import ExportUtilities
-ExportUtilities.export_to_aws(s3_filename, 'ocexportpdf')
+print ExportUtilities.export_to_aws(s3_filename, 'ocexportpdf')
 
 import os
 os.remove(s3_filename)
