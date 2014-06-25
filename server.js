@@ -68,4 +68,59 @@ wss.on('connection', function(ws){
     });
 });
 
+var http = require("http"),
+    url = require("url"),
+    qs = require('querystring');
+
+function renderDoc(url, callback){
+    var exporter = spawn('python', ['render-pdf.py', url]);
+
+    exporter.stdout.on('data', function(data){
+        var exportUrl = data.toString().trim();
+
+        console.log(exportUrl);
+
+        if (exportUrl.substring(0, 4) ===  'http'){
+            var success = {
+                documentProcessed: true,
+                url: exportUrl
+            };
+            callback(JSON.stringify(success));
+        }}
+    );
+
+    exporter.stderr.on('data', function(data){
+        console.log(data.toString());
+    });
+}
+
+function onRequest(request, response) {
+    path = url.parse(request.url).pathname;
+
+    if (path === '/render' && request.method == 'POST') {
+        var body = '';
+        request.on('data', function (data) {
+            body += data;
+
+            // Too much POST data, kill the connection!
+            if (body.length > 1e6)
+                req.connection.destroy();
+        });
+        request.on('end', function () {
+            var post = qs.parse(body);
+
+            // use post['blah'], etc.
+            renderDoc(post['url'], function(message){
+                response.writeHead(200, {"Content-Type": "application/json"});
+                response.write(message);
+                response.end();
+            });
+        });
+    }
+
+
+}
+
+http.createServer(onRequest).listen(8888);
+
 console.log('Server running at http://127.0.0.1:1337/');
